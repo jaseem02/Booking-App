@@ -1,80 +1,89 @@
 import React, { useContext } from "react";
 import RoomImageSlider from "./RoomImageSlider";
 import RoomInfo from "./Roominfo";
-
 import "./RoomDetails.css";
 import { UserContext } from "../UserContext";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
-  const { user, setUser } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
-  const handleBooking = async (roomId, userId, selectedDateRange) => {
+
+  const handleBooking = async () => {
+    // Not logged in → redirect
     if (!user) {
+      console.warn("User not logged in, redirecting...");
       return navigate("/auth");
     }
-    console.log(user.token);
-    const baseURL = "https://booking-app-1-c1gs.onrender.com";
-    const roomUrl = `${baseURL}/rooms/${roomId}/`;
-    const userUrl = `${baseURL}/users/${userId}/`;
 
-    if (selectedDateRange.startDate && !selectedDateRange.endDate) {
-      selectedDateRange.endDate = selectedDateRange.startDate;
+    const token = user.token;
+    const userId = user.user.id; // Because backend returns { user: {...}, token: "..."}
+    const roomId = room.id;
+
+    if (!token) {
+      console.error("Token missing in user context!");
+      return navigate("/auth");
     }
-    for (
-      let currentDate = new Date(selectedDateRange.startDate);
-      currentDate <= new Date(selectedDateRange.endDate);
-      currentDate.setDate(currentDate.getDate() + 1)
-    ) {
+
+    // Date range handling
+    const startDate = selectedDateRange.startDate;
+    const endDate = selectedDateRange.endDate || startDate;
+
+    console.log("📅 Booking room:", roomId, "for user:", userId);
+    console.log("➡️ Dates:", startDate, "to", endDate);
+
+    let currentDate = new Date(startDate);
+
+    while (currentDate <= new Date(endDate)) {
+      const formattedDate = currentDate.toISOString().split("T")[0];
+
+      console.log("➡️ Trying date:", formattedDate);
+
       try {
-        const response = await fetch(`${baseURL}/occupied-dates/`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Token ${user.token}`,
-          },
-          body: JSON.stringify({
-            room: roomUrl, // Full URL, e.g., /rooms/1/
-            user: userUrl, // Full URL, e.g., /users/2/
-            date: currentDate
-              .toLocaleDateString("hu")
-              .replace(/\./g, "-")
-              .replace(/\s+/g, "")
-              .slice(0, -1), // Format date as YYYY-MM-DD
-          }),
-        });
-        console.log(user);
-        console.log(response);
-        console.log(
-          roomUrl,
-          userUrl,
-          currentDate
-            .toLocaleDateString("hu")
-            .replace(/\./g, "-")
-            .replace(/\s+/g, "")
-            .slice(0, -1)
-        ); // Format date as YYYY-MM-DD)
+        const response = await fetch(
+          "https://booking-app-1-c1gs.onrender.com/occupied-dates/",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Token ${token}`,
+            },
+            body: JSON.stringify({
+              room: roomId, // backend expects integer
+              date: formattedDate,
+            }),
+          }
+        );
+
+        console.log("Response Status:", response.status);
+
         if (!response.ok) {
-          throw new Error("Booking failed");
+          throw new Error(`Booking failed for ${formattedDate}`);
         }
-        const data = await response.json(); // Parse the JSON response
-        onBookingSuccess();
-        console.log("Booking successful:", data);
+
+        const data = await response.json();
+        console.log("✅ Booking success:", data);
       } catch (error) {
-        console.error("Error during booking:", error);
+        console.error("❌ Error:", error);
+        alert("Booking failed for date: " + formattedDate);
       }
+
+      // Move to next day
+      currentDate.setDate(currentDate.getDate() + 1);
     }
+
+    if (onBookingSuccess) onBookingSuccess();
   };
+
   return (
     <div className="room-card">
       <RoomImageSlider images={room.images} />
       <RoomInfo room={room} />
+
       {selectedDateRange ? (
         <button
           className="book-room-button"
-          onClick={() =>
-            handleBooking(room.id, user.user.id, selectedDateRange)
-          }
+          onClick={handleBooking}
           disabled={!selectedDateRange.startDate}
         >
           Book Room
