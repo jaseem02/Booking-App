@@ -26,7 +26,7 @@ const AuthForm = () => {
     let userData = formData;
     try {
       const response = await fetch(
-        "https://booking-app-backend-4vb9.onrender.com/login/",
+        "https://booking-app-1-c1gs.onrender.com/login/",
         {
           method: "POST",
           headers: {
@@ -59,7 +59,7 @@ const AuthForm = () => {
     let userData = formData;
     try {
       const response = await fetch(
-        "https://booking-app-backend-4vb9.onrender.com/register/",
+        "https://booking-app-1-c1gs.onrender.com/register/",
         {
           method: "POST",
           headers: {

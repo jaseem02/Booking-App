@@ -150,7 +150,7 @@ REST_FRAMEWORK = {
 }
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://booking-app-backend-4vb9.onrender.com",
+    "https://booking-app-1-c1gs.onrender.com",
     "https://booking-app-nine-ruby.vercel.app",
 ]
 CORS_ALLOWED_ORIGINS = [

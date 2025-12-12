@@ -19,14 +19,14 @@ class RoomSerializer(serializers.HyperlinkedModelSerializer):
         model = Room
         fields = ['url','id','name','type','pricePerNight','currency','maxOccupancy','description','images']
         
-class OccupiedDateSerializer(serializers.HyperlinkedModelSerializer):
-    room = serializers.HyperlinkedRelatedField(
-        view_name = 'room-detail',
-        queryset = Room.objects.all()
-    )
+class OccupiedDateSerializer(serializers.ModelSerializer):
+    room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())
+    user = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = OccupiedDate
-        fields = ['url','id','room','date']
+        fields = ['id', 'room', 'user', 'date']
+
         
         
 from django.contrib.auth.hashers import make_password

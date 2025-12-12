@@ -22,7 +22,7 @@ const BookingComponent = ({ currentUser }) => {
     async function fetchRoomData() {
       try {
         const response = await fetch(
-          "https://booking-app-backend-4vb9.onrender.com/rooms/",
+          "https://booking-app-1-c1gs.onrender.com/rooms/",
           {
             method: "GET",
           }
@@ -156,9 +156,10 @@ const BookingComponent = ({ currentUser }) => {
       return fallsIntoRange;
     };
 
-    const availableRooms = roomData.filter((room) =>
-      room.occupiedDates.every((occ) => !isDateInRange(occ.date))
-    );
+    const availableRooms = roomData.filter((room) => {
+      const occupied = Array.isArray(room.occupiedDates) ? room.occupiedDates : [];
+      return occupied.every((occ) => !isDateInRange(occ.date));
+    });
 
     setFilteredRooms(availableRooms);
     setIsFiltered(true);

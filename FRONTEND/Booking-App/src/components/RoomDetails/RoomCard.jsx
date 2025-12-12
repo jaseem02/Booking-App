@@ -14,7 +14,7 @@ const RoomCard = ({ room, selectedDateRange, onBookingSuccess }) => {
       return navigate("/auth");
     }
     console.log(user.token);
-    const baseURL = "https://booking-app-backend-4vb9.onrender.com";
+    const baseURL = "https://booking-app-1-c1gs.onrender.com";
     const roomUrl = `${baseURL}/rooms/${roomId}/`;
     const userUrl = `${baseURL}/users/${userId}/`;
 

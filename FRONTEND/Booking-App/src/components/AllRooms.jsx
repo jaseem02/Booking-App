@@ -9,7 +9,7 @@ const AllRooms = () => {
     async function fetchRoomData() {
       try {
         const response = await fetch(
-          "https://booking-app-backend-4vb9.onrender.com/rooms/",
+          "https://booking-app-1-c1gs.onrender.com/rooms/",
           {
             method: "GET",
           }

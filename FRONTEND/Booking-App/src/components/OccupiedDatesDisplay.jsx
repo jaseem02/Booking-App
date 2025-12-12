@@ -12,7 +12,7 @@ const OccupiedDatesDisplay = () => {
       return;
     }
 
-    const baseURL = "https://booking-app-backend-4vb9.onrender.com";
+    const baseURL = "https://booking-app-1-c1gs.onrender.com";
     async function fetchDates() {
       try {
         const response = await fetch(`${baseURL}/occupied-dates/`, {
