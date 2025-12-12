@@ -10,10 +10,11 @@ class Room(models.Model):
         ('standard','Standard Room'),
         ('deluxe','Deluxe Room')
     ]
-    CURRENCY_TYPES =[
-        ('USD','USD'),
-        ('USD','EUR')
+    CURRENCY_TYPES = [
+    ('USD','USD'),
+    ('EUR','EUR')
     ]
+
     name = models.CharField(max_length=100, blank=True, default='')
     type = models.CharField(max_length=100, choices=ROOM_TYPES)
     pricePerNight = models.IntegerField(default=150)
@@ -35,7 +36,7 @@ class RoomImage(models.Model):
     
     
 class OccupiedDate(models.Model):
-    room = models.ForeignKey(Room,on_delete=models.CASCADE,related_name="OccupiedDates")
+    room = models.ForeignKey(Room,on_delete=models.CASCADE,related_name="occupiedDates")
     user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.CASCADE,related_name="booked_dates")
     date = models.DateField()
     

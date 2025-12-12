@@ -35,10 +35,11 @@ class RoomDetail(generics.RetrieveUpdateDestroyAPIView):
 class OccupiedDatesList(generics.ListCreateAPIView):
     queryset = OccupiedDate.objects.all()
     serializer_class = OccupiedDateSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
 
 
 
@@ -70,7 +71,7 @@ class UserDetail(generics.RetrieveAPIView):
         if obj == user or user.is_staff or user.is_superuser:
             return obj
         else:
-            raise permissions.permissionDenied("You do not have permission to acces this user's details.")
+            raise PermissionDenied("You do not have permission to access this user's details.")
          
 class Register(generics.CreateAPIView):
     queryset = User.objects.all()
